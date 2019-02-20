@@ -272,8 +272,7 @@ function isString(value) {
 function getCardId(value) {
   const rankValue = 'A234567891JQK';
   const colorValue = '♣♦♥♠';
-  return rankValue
-    .indexOf(value[0]) + (colorValue.indexOf(value[value.length - 1]) * 13);
+  return rankValue.indexOf(value[0]) + (colorValue.indexOf(value[value.length - 1]) * 13);
 }
 
 module.exports = {
