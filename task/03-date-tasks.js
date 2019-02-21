@@ -1,4 +1,3 @@
-
 /** ******************************************************************************************
  *                                                                                          *
  * Plese read the following tutorial before implementing tasks:                             *
@@ -21,7 +20,7 @@
  *    'Sun, 17 May 1998 03:00:00 GMT+01' => Date()
  */
 function parseDataFromRfc2822(value) {
-  throw new Error('Not implemented');
+  return new Date(value);
 }
 
 /**
@@ -36,7 +35,7 @@ function parseDataFromRfc2822(value) {
  *    '2016-01-19T08:07:37Z' => Date()
  */
 function parseDataFromIso8601(value) {
-  throw new Error('Not implemented');
+  return new Date(value);
 }
 
 
@@ -55,7 +54,7 @@ function parseDataFromIso8601(value) {
  *    Date(2015,1,1)    => false
  */
 function isLeapYear(date) {
-  throw new Error('Not implemented');
+  return new Date(date.getFullYear(), 1, 30).getDate() === 1;
 }
 
 
@@ -75,7 +74,8 @@ function isLeapYear(date) {
  *    Date(2000,1,1,10,0,0),  Date(2000,1,1,15,20,10,453)   => "05:20:10.453"
  */
 function timeSpanToString(startDate, endDate) {
-  throw new Error('Not implemented');
+  const res = new Date(endDate - startDate);
+  return res.toISOString().slice(11, -1);
 }
 
 
@@ -94,7 +94,17 @@ function timeSpanToString(startDate, endDate) {
  *    Date.UTC(2016,3,5,21, 0) => Math.PI/2
  */
 function angleBetweenClockHands(date) {
-  throw new Error('Not implemented');
+
+  const dateUTC = new Date(date);
+  const minutes = dateUTC.getUTCMinutes();
+  const hours = dateUTC.getUTCHours();
+
+  let res = 0.5 * (60 * hours - 11 * minutes);
+  while (res >= 360) {
+    res -= 360;
+  }
+  if (res > 180) res = 360 - res;
+  return res * Math.PI / 180;
 }
 
 module.exports = {
