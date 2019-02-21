@@ -270,9 +270,9 @@ function isString(value) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-  const rankValue = 'A234567891JQK';
-  const colorValue = '♣♦♥♠';
-  return rankValue.indexOf(value[0]) + (colorValue.indexOf(value[value.length - 1]) * 13);
+  const rank = 'A234567891JQK';
+  const mark = '♣♦♥♠';
+  return rank.indexOf(value[0]) + mark.indexOf(value[value.length - 1]) * 13;
 }
 
 module.exports = {
