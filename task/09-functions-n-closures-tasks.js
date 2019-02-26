@@ -25,7 +25,7 @@
  *
  */
 function getComposition(f, g) {
-  throw new Error('Not implemented');
+  return (x) => f(g(x));
 }
 
 
@@ -46,7 +46,7 @@ function getComposition(f, g) {
  *
  */
 function getPowerFunction(exponent) {
-  throw new Error('Not implemented');
+  return x => x ** exponent;
 }
 
 
@@ -64,7 +64,11 @@ function getPowerFunction(exponent) {
  *   getPolynom()      => null
  */
 function getPolynom() {
-  throw new Error('Not implemented');
+  return x => {
+    return [...arguments].slice().reverse().reduce((acc, el, i) => {
+      return acc += el * (x ** i);
+    });
+  };
 }
 
 
@@ -83,7 +87,8 @@ function getPolynom() {
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
 function memoize(func) {
-  throw new Error('Not implemented');
+  const cache = func()
+  return () => cache;
 }
 
 
@@ -103,7 +108,16 @@ function memoize(func) {
  * retryer() => 2
  */
 function retry(func, attempts) {
-  throw new Error('Not implemented');     
+  retry.times = 0;
+  return () => {
+    while (retry.times <= attempts) {
+      try {
+        return func();
+      } catch (e) {
+        if (++retry.times === attempts) throw new Error(e);
+      }
+    }
+  }; 
 }
 
 
@@ -131,7 +145,12 @@ function retry(func, attempts) {
  *
  */
 function logger(func, logFunc) {
-  throw new Error('Not implemented');
+  return (...args) => {
+    logFunc(`${func.name}(${args.map(arg => JSON.stringify(arg))}) starts`);
+    logger.result = func(...args);
+    logFunc(`${func.name}(${args.map(arg => JSON.stringify(arg))}) ends`);
+    return logger.result;
+  }
 }
 
 
@@ -149,7 +168,7 @@ function logger(func, logFunc) {
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
 function partialUsingArguments(fn) {
-  throw new Error('Not implemented');
+  return (...args) => fn(...(Array.prototype.slice.call(arguments, 1)), ...args);
 }
 
 
@@ -171,7 +190,7 @@ function partialUsingArguments(fn) {
  *   getId10() => 11
  */
 function getIdGeneratorFunction(startFrom) {
-  throw new Error('Not implemented');
+  return () => startFrom++;
 }
 
 module.exports = {

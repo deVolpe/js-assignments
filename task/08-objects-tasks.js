@@ -22,8 +22,13 @@
  *    console.log(r.getArea());   // => 200
  */
 function Rectangle(width, height) {
-  throw new Error('Not implemented');
+  this.width = width;
+  this.height = height;
 }
+
+Rectangle.prototype.getArea = function() {
+  return this.width * this.height;
+};
 
 
 /**
@@ -37,7 +42,7 @@ function Rectangle(width, height) {
  *    { width: 10, height : 20 } => '{"height":10,"width":20}'
  */
 function getJSON(obj) {
-  throw new Error('Not implemented');
+  return JSON.stringify(obj);
 }
 
 
@@ -53,7 +58,7 @@ function getJSON(obj) {
  *
  */
 function fromJSON(proto, json) {
-  throw new Error('Not implemented');
+  return Object.assign(Object.create(proto), JSON.parse(json));
 }
 
 
@@ -114,32 +119,35 @@ function fromJSON(proto, json) {
 
 const cssSelectorBuilder = {
 
+  emmetAbr: '',
+
+
   element(value) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(value);
   },
 
   id(value) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(`#${value}`);
   },
 
   class(value) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(`.${value}`);
   },
 
   attr(value) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(`[${value}]`);
   },
 
   pseudoClass(value) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(`:${value}`);
   },
 
   pseudoElement(value) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(`::${value}`);
   },
 
   combine(selector1, combinator, selector2) {
-    throw new Error('Not implemented');
+    this.emmetAbr.concat(`${selector1.stringify()} ${combinator} ${selector2.stringify()}`);
   }
 };
 

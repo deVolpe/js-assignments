@@ -1,4 +1,3 @@
-
 /** ******************************************************************************************
  *                                                                                          *
  * Plese read the following tutorial before implementing tasks:                             *
@@ -32,7 +31,20 @@
  *
  */
 function* get99BottlesOfBeer() {
-  throw new Error('Not implemented');
+  for (let i = 99; i > 0; i--) {
+    if (i === 1) {
+      yield `1 bottle of beer on the wall, 1 bottle of beer.`;
+      // eslint-disable-next-line
+      yield `Take one down and pass it around, no more bottles of beer on the wall.`;
+    } else {
+      yield `${i} bottles of beer on the wall, ${i} bottles of beer.`;
+      // eslint-disable-next-line
+      yield `Take one down and pass it around, ${i - 1} bottle${i === 2 ? '' : 's'} of beer on the wall.`;
+    }
+  }
+
+  yield 'No more bottles of beer on the wall, no more bottles of beer.';
+  yield 'Go to the store and buy some more, 99 bottles of beer on the wall.';
 }
 
 
@@ -46,7 +58,14 @@ function* get99BottlesOfBeer() {
  *
  */
 function* getFibonacciSequence() {
-  throw new Error('Not implemented');
+  let a = 0,
+    b = 1;
+  while (true) {
+    yield a;
+    const t = b;
+    b = a + b;
+    a = t;
+  }
 }
 
 
@@ -81,7 +100,17 @@ function* getFibonacciSequence() {
  *
  */
 function* depthTraversalTree(root) {
-  throw new Error('Not implemented');
+  const nodes = [root];
+
+  for (let i = 0; i < nodes.length; i++) {
+    yield nodes[i];
+
+    if(nodes[i].children) {
+      for (const child of nodes[i].children) {
+        
+      }
+    }
+  }
 }
 
 
@@ -107,7 +136,13 @@ function* depthTraversalTree(root) {
  *
  */
 function* breadthTraversalTree(root) {
-  throw new Error('Not implemented');
+  // const nodes = root.children;
+  // const sequence = [];
+  // for (const node of nodes) {
+
+  //   sequence.push(node);
+
+  // }
 }
 
 
@@ -125,7 +160,13 @@ function* breadthTraversalTree(root) {
  *   [ 1, 3, 5, ... ], [ -1 ] => [ -1, 1, 3, 5, ...]
  */
 function* mergeSortedSequences(source1, source2) {
-  throw new Error('Not implemented');
+  // const averageLength = source1.length / 2 + source2.length / 2;
+  // for (let i = 0; i < array.length; i++) {
+  //   const element = array[i];
+    
+  // }
+  
+  // return [...res.sort()];
 }
 
 module.exports = {
