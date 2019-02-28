@@ -302,8 +302,8 @@ function isCreditCardNumber(ccn) {
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
 function getDigitalRoot(num) {
-  // const arr = `${num}`.split('').reduce((el, sum) => +el + sum);
-  // return arr > 9 ? getDigitalRoot(arr) : arr;
+  const arr = `${num}`.split('').map(el => +el).reduce((el, sum) => el + sum);
+  return arr > 9 ? getDigitalRoot(arr) : arr;
 }
 
 
@@ -444,17 +444,15 @@ function toNaryString(num, n) {
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
 function getCommonDirectoryPath(pathes) {
-  const pathesArrays = pathes.map(path => {
-    return path.split('/');
-  });
+  const dividePathes  = pathes.map(path => path.split('/'));
   const commonParts = [];
-  for (let i = 0; i < pathesArrays[0].length; i++) {
-    const commonPart = pathesArrays[0][i];
+  for (let i = 0; i < dividePathes[0].length; i++) {
+    const commonPart = dividePathes[0][i];
     let isCommon = true;
-    for (let j = 0; j < pathesArrays.length; j++) {
-      isCommon = isCommon && pathesArrays[j][i] === commonPart && pathesArrays[j][i] !== undefined;
+    for (let j = 0; j < dividePathes.length; j++) {
+      isCommon = isCommon && dividePathes[j][i] === commonPart && dividePathes[j][i] !== undefined;
     }
-    if (!isCommon || i === pathesArrays[0].length - 1) {
+    if (!isCommon || i === dividePathes[0].length - 1) {
       commonParts.push('');
       return commonParts.join('/');
     }
@@ -524,45 +522,24 @@ function getMatrixProduct(m1, m2) {
  *
  */
 function evaluateTicTacToePosition(position) {
-  const rows = position.map(row => row.join(''));
-
-  for (const row of rows) {
-    if (row.every(el => el === 'X')) return 'X';
-    
-    if (row.every(el => el === '0')) return '0';
-  }
-
-  const cols = [];
-  for (let col = 0; col < position.length; col++) {
-    const col = rows.filter(row => row[i]);
-    cols.push(col);
-  }
+  const winCombinations = [
+    [position[0][0], position[1][1], position[2][2]],
+    [position[0][0], position[0][1], position[0][2]],
+    [position[1][0], position[1][1], position[1][2]],
+    [position[2][0], position[2][1], position[2][2]],
+    [position[0][0], position[1][0], position[2][0]],
+    [position[0][1], position[1][1], position[2][1]],
+    [position[0][2], position[1][2], position[2][2]],
+    [position[0][2], position[1][1], position[2][0]]
+  ];
   
-  for (const col of cols) {
-    if (col.every(el => el === 'X')) return 'X';
+  const winResult = (char1, char2) => {
+    if (winCombinations.some(set => set.every(el => el === char1))) return char1;
+    if (winCombinations.some(set => set.every(el => el === char2))) return char2;
+    return undefined;
+  };
 
-    if (col.every(el => el === '0')) return '0';
-  }
-
-  const mainDiagonal = [];
-  for (let i = 0; i < position.length; i++) {
-    mainDiagonal.push(rows[i][i]);
-  }
-
-  if (mainDiagonal.every(el => el === 'X')) return 'X';
-
-  if (mainDiagonal.every(el => el === '0')) return '0';
-
-  const incidentDiagonal = [];
-  for (let i = position.length - 1; i >= 0; i--) {
-    incidentDiagonal.push(rows[i][i]);
-  }
-  
-  if (incidentDiagonal.every(el => el === 'X')) return 'X';
-
-  if (incidentDiagonal.every(el => el === '0')) return '0';
-
-  return undefined;
+  return winResult('X', '0');
 }
 
 module.exports = {

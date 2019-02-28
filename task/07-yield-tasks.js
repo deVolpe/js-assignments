@@ -100,15 +100,14 @@ function* getFibonacciSequence() {
  *
  */
 function* depthTraversalTree(root) {
-  const nodes = [root];
-
-  for (let i = 0; i < nodes.length; i++) {
-    yield nodes[i];
-
-    if(nodes[i].children) {
-      for (const child of nodes[i].children) {
-        
-      }
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    yield node;
+    if (node.children) {
+      node.children.reverse().forEach(child => {
+        stack.push(child);
+      });
     }
   }
 }
@@ -136,13 +135,17 @@ function* depthTraversalTree(root) {
  *
  */
 function* breadthTraversalTree(root) {
-  // const nodes = root.children;
-  // const sequence = [];
-  // for (const node of nodes) {
+  const nodes = [root];
 
-  //   sequence.push(node);
+  for (const node of nodes) {
+    yield node;
 
-  // }
+    if (node.children) {
+      for (const child of node.children) {
+        nodes.push(child);
+      }
+    }
+  }
 }
 
 
@@ -160,13 +163,19 @@ function* breadthTraversalTree(root) {
  *   [ 1, 3, 5, ... ], [ -1 ] => [ -1, 1, 3, 5, ...]
  */
 function* mergeSortedSequences(source1, source2) {
-  // const averageLength = source1.length / 2 + source2.length / 2;
-  // for (let i = 0; i < array.length; i++) {
-  //   const element = array[i];
-    
-  // }
-  
-  // return [...res.sort()];
+  const first = source1(),
+    second = source2();
+  let value1 = first.next(),
+    value2 = second.next();
+  while (!value1.done || !value2.done) {
+    if (value1.value > value2.value || value1.done) {
+      yield value2.value;
+      value2 = second.next();
+    } else if (value1.value < value2.value || value2.done) {
+      yield value1.value;
+      value1 = first.next();
+    }
+  }
 }
 
 module.exports = {
