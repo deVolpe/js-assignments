@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/deVolpe/js-assignments.svg?branch=master)](https://travis-ci.org/deVolpe/js-assignments)
 ![Hackage-Deps](https://img.shields.io/hackage-deps/v/lens.svg)
-[![Greenkeeper badge](https://badges.greenkeeper.io/deVolpe/js-assignments.svg)](https://greenkeeper.io/)
-[![GitHub release](https://img.shields.io/github/release/deVolpe/js-assignments.svg)](https://github.com/deVolpe/js-assignments/releases/latest)
+<!-- [![Greenkeeper badge](https://badges.greenkeeper.io/deVolpe/js-assignments.svg)](https://greenkeeper.io/) -->
+<!-- [![GitHub release](https://img.shields.io/github/release/deVolpe/js-assignments.svg)](https://github.com/deVolpe/js-assignments/releases/latest) -->
 
 
 # [Brest IT Shark](https://it-shark.pro/)
