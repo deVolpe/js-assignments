@@ -72,11 +72,11 @@ function* wrapText(text, columns) {
     stack = [];
   for (const str of txt) {
 
-    if (str.length <= columns && stack.length + str.length <= columns) {
+    if (str.length <= columns && stack.length + str.length < columns) {
       stack.push(`${str} `);
     }
 
-    if (stack.length === columns) yield stack.join('');
+    if (stack.length === columns) yield stack.join('').trimRight();
   }
 }
 

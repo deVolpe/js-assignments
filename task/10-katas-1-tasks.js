@@ -23,19 +23,19 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
   const getAbbreviation = () => {
     let counter = 0;
 
-    const next = (current, next, numberSide) => {
-      const middle = numberSide % 2 ? `${next}${current}` : `${current}${next}`;
+    const next = (curr, next, side) => {
+      const middle = side % 2 ? `${next}${curr}` : `${curr}${next}`;
       counter++;
 
       switch (counter) {
       case 1:
-        return `${current}`;
+        return `${curr}`;
       case 2:
-        return `${current}b${next}`;
+        return `${curr}b${next}`;
       case 3:
-        return `${current}${middle}`;
+        return `${curr}${middle}`;
       case 4:
-        return `${middle}b${current}`;
+        return `${middle}b${curr}`;
       case 5:
         return `${middle}`;
       case 6:
@@ -43,7 +43,7 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
       case 7:
         return `${next}${middle}`;
       case 8:
-        return `${next}b${current}`;
+        return `${next}b${curr}`;
       default:
         counter = 0;
       }
@@ -102,23 +102,23 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-  const toExpand = [str],
+  const stack = [str],
     expanded = [];
 
-  while (toExpand.length > 0) {
-    const string = toExpand.pop();
-    const matched = string.match(/{([^{}]*)}/);
+  while (stack.length) {
+    const _str = stack.pop();
+    const matched = _str.match(/{([^{}]*)}/);
 
     if (matched) {
       const replacements = matched[1].split(',');
 
       for (const replacement of replacements) {
-        toExpand.push(string.replace(matched[0], replacement));
+        stack.push(_str.replace(matched[0], replacement));
       }
 
-    } else if (!expanded.includes(string)) {
-      expanded.push(string);
-      yield string;
+    } else if (!expanded.includes(_str)) {
+      expanded.push(_str);
+      yield _str;
     }
   }
 }
@@ -197,18 +197,20 @@ function getZigZagMatrix(n) {
  */
 function canDominoesMakeRow(dominoes) {
   let currentDomino = dominoes.shift(),
-    counter = 0;
+    counter = dominoes.length;
 
-  while (dominoes.length > counter) {
+  while (counter) {
     for (const domino of dominoes) {
-      const isContain = currentDomino.some(val => {
-        return domino && (domino[0] === val || domino[1] === val);
+      const isContain = currentDomino.some(value => {
+        return domino && (value === domino[0] ||
+          value === domino[1]);
       });
+
       if (isContain) {
-        currentDomino = dominoes.slice(dominoes.indexOf(domino), 1)[0];
+        currentDomino = dominoes.splice(dominoes.indexOf(domino), 1)[0];
       }
     }
-    counter++;
+    counter--;
   }
   return !dominoes.length;
 }

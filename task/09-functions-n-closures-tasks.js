@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 
 /** ********************************************************************************************
  *                                                                                            *
@@ -25,7 +26,7 @@
  *
  */
 function getComposition(f, g) {
-  return (x) => f(g(x));
+  return x => f(g(x));
 }
 
 
@@ -87,7 +88,7 @@ function getPolynom() {
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
 function memoize(func) {
-  const cache = func()
+  const cache = func();
   return () => cache;
 }
 
@@ -150,7 +151,7 @@ function logger(func, logFunc) {
     logger.result = func(...args);
     logFunc(`${func.name}(${args.map(arg => JSON.stringify(arg))}) ends`);
     return logger.result;
-  }
+  };
 }
 
 
