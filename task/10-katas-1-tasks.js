@@ -1,4 +1,3 @@
-
 /**
  * Returns the array of 32 compass points and heading.
  * See details here:
@@ -16,8 +15,55 @@
  *  ]
  */
 function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
-  /* use array of cardinal directions only! it is a default parameter! */
-  throw new Error('Not implemented');
+  const array = [];
+  let azimuth = 0,
+    abbreviation = '';
+  sides.push(sides[0]);
+
+  const getAbbreviation = () => {
+    let counter = 0;
+
+    const next = (current, next, numberSide) => {
+      const middle = numberSide % 2 ? `${next}${current}` : `${current}${next}`;
+      counter++;
+
+      switch (counter) {
+      case 1:
+        return `${current}`;
+      case 2:
+        return `${current}b${next}`;
+      case 3:
+        return `${current}${middle}`;
+      case 4:
+        return `${middle}b${current}`;
+      case 5:
+        return `${middle}`;
+      case 6:
+        return `${middle}b${next}`;
+      case 7:
+        return `${next}${middle}`;
+      case 8:
+        return `${next}b${current}`;
+      default:
+        counter = 0;
+      }
+    };
+    return next;
+  };
+
+  const nextAbbreviation = getAbbreviation();
+
+  for (let i = 0, l = sides.length - 1; i < l; i++) {
+    while ((abbreviation = nextAbbreviation(sides[i], sides[i + 1], i))) {
+      array.push({
+        abbreviation,
+        azimuth
+      });
+
+      azimuth += 11.25;
+    }
+  }
+  return array;
 }
 
 
@@ -56,7 +102,25 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
  *   'nothing to do' => 'nothing to do'
  */
 function* expandBraces(str) {
-  throw new Error('Not implemented');
+  const toExpand = [str],
+    expanded = [];
+
+  while (toExpand.length > 0) {
+    const string = toExpand.pop();
+    const matched = string.match(/{([^{}]*)}/);
+
+    if (matched) {
+      const replacements = matched[1].split(',');
+
+      for (const replacement of replacements) {
+        toExpand.push(string.replace(matched[0], replacement));
+      }
+
+    } else if (!expanded.includes(string)) {
+      expanded.push(string);
+      yield string;
+    }
+  }
 }
 
 
@@ -115,7 +179,21 @@ function getZigZagMatrix(n) {
  *
  */
 function canDominoesMakeRow(dominoes) {
-  throw new Error('Not implemented');
+  let currentDomino = dominoes.shift(),
+    counter = 0;
+
+  while (dominoes.length > counter) {
+    for (const domino of dominoes) {
+      const isContain = currentDomino.some(val => {
+        return domino && (domino[0] === val || domino[1] === val);
+      });
+      if (isContain) {
+        currentDomino = dominoes.slice(dominoes.indexOf(domino), 1)[0];
+      }
+    }
+    counter++;
+  }
+  return !dominoes.length;
 }
 
 
@@ -141,13 +219,38 @@ function canDominoesMakeRow(dominoes) {
  * [ 1, 2, 4, 5]          => '1,2,4,5'
  */
 function extractRanges(nums) {
-  throw new Error('Not implemented');
+  const stack = [];
+  let start = 0,
+    end = 0;
+
+  while (nums.length) {
+    start = nums.shift();
+    end = start;
+
+    while (nums.length && nums[0] - end === 1) {
+      end = nums.shift();
+    }
+
+    switch (end - start) {
+    case 0:
+      stack.push(start);
+      break;
+    case 1:
+      stack.push(start);
+      stack.push(end);
+      break;
+    default:
+      stack.push(`${start}-${end}`);
+      break;
+    }
+  }
+  return stack;
 }
 
 module.exports = {
-  createCompassPoints : createCompassPoints,
-  expandBraces : expandBraces,
-  getZigZagMatrix : getZigZagMatrix,
-  canDominoesMakeRow : canDominoesMakeRow,
-  extractRanges : extractRanges
+  createCompassPoints: createCompassPoints,
+  expandBraces: expandBraces,
+  getZigZagMatrix: getZigZagMatrix,
+  canDominoesMakeRow: canDominoesMakeRow,
+  extractRanges: extractRanges
 };

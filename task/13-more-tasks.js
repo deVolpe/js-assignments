@@ -12,7 +12,8 @@
  *   'abcdefghijklmnop',  'lmnopqrstuvwxyz'  => 'abcdefghijklmnopqrstuvwxyz'
  */
 function distinctLettersString(value1, value2) {
-  throw new Error('Not implemented');
+  return Object.values(Array.from(new Set(`${value1}${value2}`
+    .split('')))).sort().join('');
 }
 
 
@@ -29,7 +30,14 @@ function distinctLettersString(value1, value2) {
  */
 
 function lowerLetters(value) {
-  throw new Error('Not implemented');
+  return value.match(/[a-z]/g).reduce((acc, char) => {
+    if (acc[char]) {
+      acc[char]++;
+    } else {
+      acc[char] = 1;
+    }
+    return acc;
+  }, {});
 }
 
 /**
@@ -45,14 +53,27 @@ function lowerLetters(value) {
  * @return {string}
  *
  * @example
- *    'a clash if KINGS', 'a an the of'  =>  'A Clash of Kings'
+ *    'a clash of KINGS', 'a an the of'  =>  'A Clash of Kings'
  *    'THE WIND IN THE WILLOWS', 'The In'  => 'The Wind in the Willows'
  *    'the quick brown fox'  => 'The Quick Brown Fox'
  */
 
 function titleCaseConvert(title, minorWords) {
-  throw new Error('Not implemented');
+  const str = title.toLowerCase().split(' '),
+    minors = minorWords ? minorWords.toLowerCase().split(' ') : '';
+  for (let i = 0; i < str.length; i++) {
+    if (i === 0 || !minors.includes(str[i].toLowerCase())) {
+      str[i] = str[i].toTitleCase();
+    } else {
+      str[i] = str[i].toLowerCase();
+    }
+  }
+  return str.join(' ');
 }
+
+String.prototype.toTitleCase = function () {
+  return `${this[0].toUpperCase()}${this.slice(1).toLowerCase()}`;
+};
 
 /**
  * Your job is to create a calculator which evaluates expressions in Reverse Polish
@@ -72,7 +93,22 @@ function titleCaseConvert(title, minorWords) {
  */
 
 function calcRPN(expr) {
-  throw new Error('Not implemented');
+
+  if (!expr) return 0;
+
+  const numbers = expr.split(' '),
+    stack = [];
+
+  for (const number of numbers) {
+    if (/[+\-*/]/.test(number)) {
+      const operand1 = stack.pop();
+      const operand2 = stack.pop();
+      stack.push(eval(`${operand2}${number}${operand1}`));
+    } else {
+      stack.push(number);
+    }
+  }
+  return stack[stack.length - 1];
 }
 
 module.exports = {

@@ -1,4 +1,3 @@
-
 /**
  * Returns true if word occurrs in the specified word snaking puzzle.
  * Each words can be constructed using "snake" path inside a grid with top, left,
@@ -28,7 +27,72 @@
  *   'NULL'      => false
  */
 function findStringInSnakingPuzzle(puzzle, searchStr) {
-  throw new Error('Not implemented');
+  const puzzleArray = puzzle.map(elem => {
+    return elem.split('');
+  });
+
+  for (let i = 0; i < puzzleArray.length; i++) {
+    for (let j = 0; j < puzzleArray[0].length; j++) {
+      const workArray = [].concat(puzzleArray),
+        columns = workArray[0].length - 1,
+        rows = workArray.length - 1;
+
+      let m = 0;
+
+      let row = i,
+        col = j;
+
+      if (workArray[i][j] !== searchStr[m]) continue;
+      workArray[row][col] = null;
+      m++;
+
+      while (m !== searchStr.length) {
+
+        if (row - 1 >= 0) {
+          if (workArray[row - 1][col] === searchStr[m]) {
+            row = row - 1;
+            workArray[row][col] = null;
+            m++;
+            continue;
+          }
+        }
+
+        if (col - 1 >= 0) {
+          if (workArray[row][col - 1] === searchStr[m]) {
+            col = col - 1;
+            workArray[row][col] = null;
+            m++;
+            continue;
+          }
+        }
+
+        if (col + 1 <= columns) {
+          if (workArray[row][col + 1] === searchStr[m]) {
+            col = col + 1;
+            workArray[row][col] = null;
+            m++;
+            continue;
+          }
+        }
+
+        if (row + 1 <= rows) {
+          if (workArray[row + 1][col] === searchStr[m]) {
+            row = row + 1;
+            workArray[row][col] = null;
+            m++;
+            continue;
+          }
+        }
+
+        break;
+      }
+
+      if (m === searchStr.length) return true;
+
+    }
+  }
+
+  return false;
 }
 
 
@@ -46,9 +110,14 @@ function findStringInSnakingPuzzle(puzzle, searchStr) {
  *    'abc' => 'abc','acb','bac','bca','cab','cba'
  */
 function* getPermutations(chars) {
-  throw new Error('Not implemented');
+  
+
 }
 
+function* combinations(len, remains) {
+  if (len === 1) yield remains.join('');
+  
+}
 
 /**
  * Returns the most profit from stock quotes.
@@ -68,7 +137,9 @@ function* getPermutations(chars) {
  *    [ 1, 6, 5, 10, 8, 7 ] => 18  (buy at 1,6,5 and sell all at 10)
  */
 function getMostProfitFromStockQuotes(quotes) {
-  throw new Error('Not implemented');
+  return quotes.reduce((acc, quote, i, arr) => {
+    return acc + (Math.max(...arr.slice(i)) - quote);
+  }, 0);
 }
 
 
@@ -88,8 +159,13 @@ function getMostProfitFromStockQuotes(quotes) {
  */
 function UrlShortener() {
   this.urlAllowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-                          'abcdefghijklmnopqrstuvwxyz' +
-                          "0123456789-_.~!*'();:@&=+$,/?#[]";
+    'abcdefghijklmnopqrstuvwxyz' +
+    "0123456789-_.~!*'();:@&=+$,/?#[]";
+}
+
+function segment() {
+  this.left = 0;
+  this.right = 0;
 }
 
 UrlShortener.prototype = {
@@ -99,6 +175,10 @@ UrlShortener.prototype = {
 
   decode(code) {
     throw new Error('Not implemented');
+  },
+
+  defineSegment() {
+
   }
 };
 

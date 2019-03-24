@@ -114,6 +114,7 @@ function getRegexForSSN() {
  *   'Pa55'.match(validator) => false
  */
 function getPasswordValidator(minLength) {
+  // eslint-disable-next-line max-len
   return new RegExp(`^(?=.*[a-z])(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9]{${minLength},}$`);
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 
 /** ************************************************************************************************
  *                                                                                                *
@@ -26,7 +27,7 @@ function Rectangle(width, height) {
   this.height = height;
 }
 
-Rectangle.prototype.getArea = function() {
+Rectangle.prototype.getArea = function () {
   return this.width * this.height;
 };
 
@@ -117,37 +118,168 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
-const cssSelectorBuilder = {
+const PART_ENUM = {
+  NONE: 0,
+  ELEMENT: 1,
+  ID: 2,
+  CLASS: 3,
+  ATTR: 4,
+  PSEUDOCLASS: 5,
+  PSEUDOELEMENT: 6
+};
 
-  emmetAbr: '',
-
+class CssSelector {
+  constructor() {
+    this._element = '';
+    this._id = '';
+    this._class = [];
+    this._attr = [];
+    this._pseudoClass = [];
+    this._pseudoElement = '';
+    this._lastPart = PART_ENUM.NONE;
+  }
 
   element(value) {
-    this.emmetAbr.concat(value);
+    if (this._element.length) {
+      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    this.checkPart(PART_ENUM.ELEMENT);
+    this._element = value;
+    return this;
+  }
+
+  getElement() {
+    return this._element;
+  }
+
+  id(value) {
+    if (this._id.length) {
+      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    this.checkPart(PART_ENUM.ID);
+    this._id = value;
+    return this;
+  }
+
+  getId() {
+    return this._id ? `#${ this._id}` : '';
+  }
+
+  class(value) {
+    this.checkPart(PART_ENUM.CLASS);
+    this._class.push(value);
+    return this;
+  }
+
+  getClass() {
+    return this._class.map(_class => `.${_class}`).join('');
+  }
+
+  attr(value) {
+    this.checkPart(PART_ENUM.ATTR);
+    this._attr.push(value);
+    return this;
+  }
+
+  getAttr() {
+    return this._attr.map(_attr => `[${_attr}]`).join('');
+  }
+
+  pseudoClass(value) {
+    this.checkPart(PART_ENUM.PSEUDOCLASS);
+    this._pseudoClass.push(value);
+    return this;
+  }
+
+  getPseudoClass() {
+    return this._pseudoClass.map(_pseudoClass => `:${_pseudoClass}`).join('');
+  }
+
+  pseudoElement(value) {
+    if (this._pseudoElement.length) {
+      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    this.checkPart(PART_ENUM.PSEUDOELEMENT);
+    this._pseudoElement = value;
+    return this;
+  }
+
+  getPseudoElement() {
+    return this._pseudoElement ? `::${this._pseudoElement}` : '';
+  }
+
+  stringify() {
+    return `${this.getElement()}${this.getId()}${this.getClass()}${this.getAttr()}${this.getPseudoClass()}${this.getPseudoElement()}`;
+  }
+
+  checkPart(currentPart) {
+    if (currentPart < this._lastPart) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    this._lastPart = currentPart;
+  }
+}
+
+function selectorsCombination() {
+  this._selectors = [];
+  this._combinators = [];
+}
+
+selectorsCombination.prototype = {
+  setSelectors(...selectors) {
+    this._selectors.push(...selectors);
+  },
+
+  setCombinators(combinator) {
+    this._combinators.push(` ${combinator} `);
+  },
+
+  stringify() {
+    let combination = '';
+
+    for (let i = 0; i < this._combinators.length; i++) {
+      combination += this._selectors[i].stringify() + this._combinators[i] + this._selectors[i + 1].stringify();
+    }
+
+    return combination;
+  }
+};
+
+
+const cssSelectorBuilder = {
+
+  element(value) {
+    return new CssSelector().element(value);
   },
 
   id(value) {
-    this.emmetAbr.concat(`#${value}`);
+    return new CssSelector().id(value);
   },
 
   class(value) {
-    this.emmetAbr.concat(`.${value}`);
+    return new CssSelector().class(value);
   },
 
   attr(value) {
-    this.emmetAbr.concat(`[${value}]`);
+    return new CssSelector().attr(value);
   },
 
   pseudoClass(value) {
-    this.emmetAbr.concat(`:${value}`);
+    return new CssSelector().pseudoClass(value);
   },
 
   pseudoElement(value) {
-    this.emmetAbr.concat(`::${value}`);
+    return new CssSelector().pseudoElement(value);
   },
 
   combine(selector1, combinator, selector2) {
-    this.emmetAbr.concat(`${selector1.stringify()} ${combinator} ${selector2.stringify()}`);
+    const combination = new selectorsCombination;
+    combination.setSelectors(selector1, selector2);
+    combination.setCombinators(combinator);
+
+    return combination;
   }
 };
 
