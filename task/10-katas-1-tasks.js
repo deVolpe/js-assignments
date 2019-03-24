@@ -28,24 +28,24 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
       counter++;
 
       switch (counter) {
-      case 1:
-        return `${current}`;
-      case 2:
-        return `${current}b${next}`;
-      case 3:
-        return `${current}${middle}`;
-      case 4:
-        return `${middle}b${current}`;
-      case 5:
-        return `${middle}`;
-      case 6:
-        return `${middle}b${next}`;
-      case 7:
-        return `${next}${middle}`;
-      case 8:
-        return `${next}b${current}`;
-      default:
-        counter = 0;
+        case 1:
+          return `${current}`;
+        case 2:
+          return `${current}b${next}`;
+        case 3:
+          return `${current}${middle}`;
+        case 4:
+          return `${middle}b${current}`;
+        case 5:
+          return `${middle}`;
+        case 6:
+          return `${middle}b${next}`;
+        case 7:
+          return `${next}${middle}`;
+        case 8:
+          return `${next}b${current}`;
+        default:
+          counter = 0;
       }
     };
     return next;
@@ -153,7 +153,25 @@ function* expandBraces(str) {
  *
  */
 function getZigZagMatrix(n) {
-  throw new Error('Not implemented');
+  const array = new Array(n).fill(new Array(n).fill(0));
+  // const array = new Array(n).fill(null).map(()=> new Array(n).fill(0));
+  let row = 0,
+    col = 0;
+
+  for (let val = 0; val < Math.pow(n, 2); val++) {
+    array[row][col] = val;
+
+    if ((row + col) % 2 === 0) {
+      if (col + 1 < n) col++;
+      else row += 2;
+      if (row > 0) row--;
+    } else {
+      if (row + 1 < n) row++;
+      else col += 2;
+      if (col > 0) col--;
+    }
+  }
+  return array;
 }
 
 
@@ -232,16 +250,16 @@ function extractRanges(nums) {
     }
 
     switch (end - start) {
-    case 0:
-      stack.push(start);
-      break;
-    case 1:
-      stack.push(start);
-      stack.push(end);
-      break;
-    default:
-      stack.push(`${start}-${end}`);
-      break;
+      case 0:
+        stack.push(start);
+        break;
+      case 1:
+        stack.push(start);
+        stack.push(end);
+        break;
+      default:
+        stack.push(`${start}-${end}`);
+        break;
     }
   }
   return stack;

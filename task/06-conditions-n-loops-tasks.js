@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /** ************************************************************************************************
  *                                                                                                *
  * Plese read the following tutorial before implementing tasks:                                   *

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /** *******************************************************************************************
  *                                                                                           *
  * Plese read the following tutorial before implementing tasks:                              *
@@ -227,7 +228,7 @@ function toArrayOfSquares(arr) {
  *   [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ] => [ 1, 3, 6, 10, 15, 21, 28, 36, 45, 55 ]
  */
 function getMovingSum(arr) {
-  return arr.map((el,i,arr) => (i === 0) ? el : arr[i] = arr[i - 1] + el);
+  return arr.map((el, i, arr) => (i === 0) ? el : arr[i] = arr[i - 1] + el);
 }
 
 /**
@@ -242,7 +243,7 @@ function getMovingSum(arr) {
  * [ "a" ] => []
  */
 function getSecondItems(arr) {
-  return arr.filter((el,i) => i % 2 !== 0);
+  return arr.filter((el, i) => i % 2 !== 0);
 }
 
 /**
@@ -344,7 +345,7 @@ function getItemsSum(arr) {
  *  [ null, undefined, NaN, false, 0, '' ]  => 6
  */
 function getFalsyValuesCount(arr) {
-  return arr.filter(el => !el).length
+  return arr.filter(el => !el).length;
 }
 
 /**
@@ -542,7 +543,7 @@ function selectMany(arr, childrenSelector) {
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
 function getElementByIndexes(arr, indexes) {
-  return indexes.reduce((prev, curr) => prev[curr], arr)
+  return indexes.reduce((prev, curr) => prev[curr], arr);
 }
 
 /**
