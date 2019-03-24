@@ -28,24 +28,24 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
       counter++;
 
       switch (counter) {
-        case 1:
-          return `${current}`;
-        case 2:
-          return `${current}b${next}`;
-        case 3:
-          return `${current}${middle}`;
-        case 4:
-          return `${middle}b${current}`;
-        case 5:
-          return `${middle}`;
-        case 6:
-          return `${middle}b${next}`;
-        case 7:
-          return `${next}${middle}`;
-        case 8:
-          return `${next}b${current}`;
-        default:
-          counter = 0;
+      case 1:
+        return `${current}`;
+      case 2:
+        return `${current}b${next}`;
+      case 3:
+        return `${current}${middle}`;
+      case 4:
+        return `${middle}b${current}`;
+      case 5:
+        return `${middle}`;
+      case 6:
+        return `${middle}b${next}`;
+      case 7:
+        return `${next}${middle}`;
+      case 8:
+        return `${next}b${current}`;
+      default:
+        counter = 0;
       }
     };
     return next;
@@ -153,8 +153,7 @@ function* expandBraces(str) {
  *
  */
 function getZigZagMatrix(n) {
-  const array = new Array(n).fill(new Array(n).fill(0));
-  // const array = new Array(n).fill(null).map(()=> new Array(n).fill(0));
+  const array = new Array(n).fill(null).map(()=> new Array(n).fill(0));
   let row = 0,
     col = 0;
 
@@ -250,16 +249,16 @@ function extractRanges(nums) {
     }
 
     switch (end - start) {
-      case 0:
-        stack.push(start);
-        break;
-      case 1:
-        stack.push(start);
-        stack.push(end);
-        break;
-      default:
-        stack.push(`${start}-${end}`);
-        break;
+    case 0:
+      stack.push(start);
+      break;
+    case 1:
+      stack.push(start);
+      stack.push(end);
+      break;
+    default:
+      stack.push(`${start}-${end}`);
+      break;
     }
   }
   return stack;
