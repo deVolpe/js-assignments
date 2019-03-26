@@ -27,7 +27,7 @@ function Rectangle(width, height) {
   this.height = height;
 }
 
-Rectangle.prototype.getArea = function () {
+Rectangle.prototype.getArea = function() {
   return this.width * this.height;
 };
 
@@ -83,7 +83,7 @@ function fromJSON(proto, json) {
  *
  * Provided cssSelectorBuilder should be used as facade only to create your own classes,
  * for example the first method of cssSelectorBuilder can be like this:
- *   element: function(value) {
+ *   element(value) {
  *       return new MySuperBaseElementSelector(...)...
  *   },
  *
@@ -118,135 +118,119 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
-const PART_ENUM = {
-  NONE: 0,
-  ELEMENT: 1,
-  ID: 2,
-  CLASS: 3,
-  ATTR: 4,
-  PSEUDOCLASS: 5,
-  PSEUDOELEMENT: 6
-};
+function CssSelector() {
+  this.selectors = [];
+  this.validSort = [];
+}
 
-class CssSelector {
-  constructor() {
-    this._element = '';
-    this._id = '';
-    this._class = [];
-    this._attr = [];
-    this._pseudoClass = [];
-    this._pseudoElement = '';
-    this._lastPart = PART_ENUM.NONE;
-  }
+CssSelector.prototype = {
+  sortSelectors: ['element', 'id', 'class', 'attr', 'pseudoClass', 'pseudoElement'],
 
   element(value) {
-    if (this._element.length) {
-      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
-    }
-    this.checkPart(PART_ENUM.ELEMENT);
-    this._element = value;
+    this.validate('element');
+    this.tryPush([value, 'element']);
     return this;
-  }
-
-  getElement() {
-    return this._element;
-  }
+  },
 
   id(value) {
-    if (this._id.length) {
-      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
-    }
-
-    this.checkPart(PART_ENUM.ID);
-    this._id = value;
+    this.validate('id');
+    this.tryPush([value, 'id']);
     return this;
-  }
-
-  getId() {
-    return this._id ? `#${ this._id}` : '';
-  }
+  },
 
   class(value) {
-    this.checkPart(PART_ENUM.CLASS);
-    this._class.push(value);
+    this.validate('class');
+    this.selectors.push([value, 'class']);
     return this;
-  }
-
-  getClass() {
-    return this._class.map(_class => `.${_class}`).join('');
-  }
+  },
 
   attr(value) {
-    this.checkPart(PART_ENUM.ATTR);
-    this._attr.push(value);
+    this.validate('attr');
+    this.selectors.push([value, 'attr']);
     return this;
-  }
-
-  getAttr() {
-    return this._attr.map(_attr => `[${_attr}]`).join('');
-  }
+  },
 
   pseudoClass(value) {
-    this.checkPart(PART_ENUM.PSEUDOCLASS);
-    this._pseudoClass.push(value);
+    this.validate('pseudoClass');
+    this.selectors.push([value, 'pseudoClass']);
     return this;
-  }
-
-  getPseudoClass() {
-    return this._pseudoClass.map(_pseudoClass => `:${_pseudoClass}`).join('');
-  }
+  },
 
   pseudoElement(value) {
-    if (this._pseudoElement.length) {
-      throw Error('Element, id and pseudo-element should not occur more then one time inside the selector');
-    }
-
-    this.checkPart(PART_ENUM.PSEUDOELEMENT);
-    this._pseudoElement = value;
+    this.validate('pseudoElement');
+    this.tryPush([value, 'pseudoElement']);
     return this;
-  }
-
-  getPseudoElement() {
-    return this._pseudoElement ? `::${this._pseudoElement}` : '';
-  }
-
-  stringify() {
-    return `${this.getElement()}${this.getId()}${this.getClass()}${this.getAttr()}${this.getPseudoClass()}${this.getPseudoElement()}`;
-  }
-
-  checkPart(currentPart) {
-    if (currentPart < this._lastPart) {
-      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
-    }
-    this._lastPart = currentPart;
-  }
-}
-
-function selectorsCombination() {
-  this._selectors = [];
-  this._combinators = [];
-}
-
-selectorsCombination.prototype = {
-  setSelectors(...selectors) {
-    this._selectors.push(...selectors);
   },
 
-  setCombinators(combinator) {
-    this._combinators.push(` ${combinator} `);
+  combine(selector1, combinator, selector2) {
+    this.tryPush([
+      [selector1, combinator, selector2], 'combine'
+    ]);
+    return this;
+  },
+
+  include(value, array) {
+    for (const cur of array) {
+      if (cur[1] === value[1]) {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  tryPush(value) {
+    if (this.include(value, this.selectors)) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    } else {
+      this.selectors.push(value);
+    }
+  },
+
+  validate(value) {
+    if (!this.validSort.length) {
+      for (const cur of this.selectors) {
+        this.validSort.push(cur[1]);
+      }
+    }
+    this.validSort.map(val => {
+      if (this.sortSelectors.indexOf(val) > this.sortSelectors.indexOf(value)) {
+        throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+      }
+    });
   },
 
   stringify() {
-    let combination = '';
-
-    for (let i = 0; i < this._combinators.length; i++) {
-      combination += this._selectors[i].stringify() + this._combinators[i] + this._selectors[i + 1].stringify();
-    }
-
-    return combination;
+    return this.selectors.reduce((acc, cur) => {
+      let str = '';
+      const value = cur[0],
+        type = cur[1];
+      switch (type) {
+      case 'element':
+        str = value;
+        break;
+      case 'id':
+        str = '#' + value;
+        break;
+      case 'class':
+        str = '.' + value;
+        break;
+      case 'attr':
+        str = '[' + value + ']';
+        break;
+      case 'pseudoClass':
+        str = ':' + value;
+        break;
+      case 'pseudoElement':
+        str = '::' + value;
+        break;
+      case 'combine':
+        str = value[0].stringify() + ' ' + value[1] + ' ' + value[2].stringify();
+        break;
+      }
+      return acc + str;
+    }, '');
   }
 };
-
 
 const cssSelectorBuilder = {
 
@@ -275,11 +259,7 @@ const cssSelectorBuilder = {
   },
 
   combine(selector1, combinator, selector2) {
-    const combination = new selectorsCombination;
-    combination.setSelectors(selector1, selector2);
-    combination.setCombinators(combinator);
-
-    return combination;
+    return new CssSelector().combine(selector1, combinator, selector2);
   }
 };
 
