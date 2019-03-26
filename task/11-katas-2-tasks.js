@@ -1,4 +1,3 @@
-
 /**
  * Returns the bank account number parsed from specified string.
  *
@@ -35,10 +34,38 @@
  *   '|_||_  _||_| _||_| _||_| _|\n',
  *
  */
-function parseBankAccount(bankAccount) {
-  throw new Error('Not implemented');
-}
 
+const digits = {
+  '   \n  |\n  |': 1,
+  ' _ \n _|\n|_ ': 2,
+  ' _ \n _|\n _|': 3,
+  '   \n|_|\n  |': 4,
+  ' _ \n|_ \n _|': 5,
+  ' _ \n|_ \n|_|': 6,
+  ' _ \n  |\n  |': 7,
+  ' _ \n|_|\n|_|': 8,
+  ' _ \n|_|\n _|': 9,
+  ' _ \n| |\n|_|': 0
+};
+
+function parseBankAccount(bankAccount) {
+  const strings = bankAccount.split('\n');
+  strings.pop();
+
+  const accountNumber = [];
+  for (let i = 0; i < strings[0].length / 3; i++) {
+    const str = `${strings[0].slice(i * 3, i * 3 + 3)}\n` +
+      `${strings[1].slice(i * 3, i * 3 + 3)}\n` +
+      `${strings[2].slice(i * 3, i * 3 + 3)}`;
+
+    accountNumber.push(digits[str]);
+
+    while (accountNumber[0] === 0) {
+      accountNumber.shift();
+    }
+  }
+  return +accountNumber.join('');
+}
 
 /**
  * Returns the string, but with line breaks inserted at just the right places to make
@@ -68,18 +95,33 @@ function parseBankAccount(bankAccount) {
  *      'characters.'
  */
 function* wrapText(text, columns) {
-  const txt = text.split(' '),
-    stack = [];
-  for (const str of txt) {
+  let startIndex = 0,
+    endIndex;
 
-    if (str.length <= columns && stack.length + str.length < columns) {
-      stack.push(`${str} `);
+  while (startIndex <= text.length) {
+    let currentIndex = startIndex;
+
+    while (true) {
+      currentIndex = text.indexOf(' ', currentIndex + 1);
+
+      if (currentIndex === -1) {
+        currentIndex = text.length;
+
+        if (currentIndex - startIndex < columns) {
+          endIndex = text.length;
+          break;
+        }
+      }
+
+      if (currentIndex - startIndex - 1 >= columns) break;
+
+      endIndex = currentIndex;
     }
 
-    if (stack.length === columns) yield stack.join('').trimRight();
+    yield text.substring(startIndex, endIndex);
+    startIndex = ++endIndex;
   }
 }
-
 
 /**
  * Returns the rank of the specified poker hand.
@@ -113,10 +155,53 @@ const PokerRank = {
   HighCard: 0
 };
 
-function getPokerHandRank(hand) {
-  throw new Error('Not implemented');
-}
+const sequence = {
+  A: 1,
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
+  J: 11,
+  Q: 12,
+  K: 13
+};
 
+function getPokerHandRank(hand) {
+  const transformHand = hand.map(card => {
+    const rank = +card[0],
+      suit = card[1];
+
+    if (rank) {
+      return {
+        rank,
+        suit
+      };
+    } else {
+      switch (card[0]) {
+      case 'J':
+        return {
+          rank: 11,
+          suit
+        };
+      case 'Q':
+        return {
+          rank: 12,
+          suit
+        };
+      case 'K':
+        return {
+          rank: 13,
+          suit
+        };
+      }
+    }
+  });
+}
 
 /**
  * Returns the rectangles sequence of specified figure.

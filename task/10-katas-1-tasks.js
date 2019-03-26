@@ -18,7 +18,6 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
   const array = [];
   let azimuth = 0,
     abbreviation = '';
-  sides.push(sides[0]);
 
   const getAbbreviation = () => {
     let counter = 0;
@@ -52,14 +51,11 @@ function createCompassPoints(sides = ['N', 'E', 'S', 'W']) {
   };
 
   const nextAbbreviation = getAbbreviation();
+  sides.push(sides[0]);
 
-  for (let i = 0, l = sides.length - 1; i < l; i++) {
+  for (let i = 0; i < sides.length - 1; i++) {
     while ((abbreviation = nextAbbreviation(sides[i], sides[i + 1], i))) {
-      array.push({
-        abbreviation,
-        azimuth
-      });
-
+      array.push({ abbreviation, azimuth });
       azimuth += 11.25;
     }
   }

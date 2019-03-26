@@ -27,63 +27,59 @@
  *   'NULL'      => false
  */
 function findStringInSnakingPuzzle(puzzle, searchStr) {
-  const puzzleArray = puzzle.map(elem => {
-    return elem.split('');
-  });
+  const puzzleArr = puzzle.map(el => el.split(''));
 
-  for (let i = 0; i < puzzleArray.length; i++) {
-    for (let j = 0; j < puzzleArray[0].length; j++) {
-      const workArray = [].concat(puzzleArray),
-        columns = workArray[0].length - 1,
-        rows = workArray.length - 1;
+  for (let i = 0; i < puzzleArr.length; i++) {
+    for (let j = 0; j < puzzleArr[0].length; j++) {
+      const arr = Array.from(puzzleArr),
+        columns = arr[0].length - 1,
+        rows = arr.length - 1;
 
-      let m = 0;
-
-      let row = i,
+      let m = 0,
+        row = i,
         col = j;
 
-      if (workArray[i][j] !== searchStr[m]) continue;
-      workArray[row][col] = null;
+      if (arr[i][j] !== searchStr[m])  continue;
+      arr[row][col] = null;
       m++;
 
       while (m !== searchStr.length) {
 
         if (row - 1 >= 0) {
-          if (workArray[row - 1][col] === searchStr[m]) {
-            row = row - 1;
-            workArray[row][col] = null;
+          if (arr[row - 1][col] === searchStr[m]) {
+            row--;
+            arr[row][col] = null;
             m++;
             continue;
           }
         }
 
         if (col - 1 >= 0) {
-          if (workArray[row][col - 1] === searchStr[m]) {
-            col = col - 1;
-            workArray[row][col] = null;
+          if (arr[row][col - 1] === searchStr[m]) {
+            col--;
+            arr[row][col] = null;
             m++;
             continue;
           }
         }
 
         if (col + 1 <= columns) {
-          if (workArray[row][col + 1] === searchStr[m]) {
-            col = col + 1;
-            workArray[row][col] = null;
+          if (arr[row][col + 1] === searchStr[m]) {
+            col++;
+            arr[row][col] = null;
             m++;
             continue;
           }
         }
 
         if (row + 1 <= rows) {
-          if (workArray[row + 1][col] === searchStr[m]) {
-            row = row + 1;
-            workArray[row][col] = null;
+          if (arr[row + 1][col] === searchStr[m]) {
+            row++;
+            arr[row][col] = null;
             m++;
             continue;
           }
         }
-
         break;
       }
 
@@ -110,14 +106,25 @@ function findStringInSnakingPuzzle(puzzle, searchStr) {
  *    'abc' => 'abc','acb','bac','bca','cab','cba'
  */
 function* getPermutations(chars) {
-  
+  if (chars.length < 2) {
+    return yield chars;
+  }
+  const combinations = [];
 
+  for (let i = 0; i < chars.length; i++) {
+    const remainStr = [...chars.slice(0, i), ...chars.slice(i + 1)];
+
+    for (const subPermutation of getPermutations(remainStr)) {
+      combinations.push(`${chars[i]}${subPermutation}`);
+    }
+  }
+
+  for (const combination of combinations) {
+    yield combination;
+  }   
 }
 
-function* combinations(len, remains) {
-  if (len === 1) yield remains.join('');
-  
-}
+
 
 /**
  * Returns the most profit from stock quotes.
