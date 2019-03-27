@@ -31,66 +31,63 @@ function findStringInSnakingPuzzle(puzzle, searchStr) {
 
   for (let i = 0; i < puzzleArr.length; i++) {
     for (let j = 0; j < puzzleArr[0].length; j++) {
-      const arr = Array.from(puzzleArr),
+      const arr = [...puzzleArr],
         columns = arr[0].length - 1,
         rows = arr.length - 1;
 
-      let m = 0,
+      let iter = 0,
         row = i,
         col = j;
 
-      if (arr[i][j] !== searchStr[m])  continue;
+      if (arr[i][j] !== searchStr[iter]) continue;
       arr[row][col] = null;
-      m++;
+      iter++;
 
-      while (m !== searchStr.length) {
-
+      while (iter !== searchStr.length) {
         if (row - 1 >= 0) {
-          if (arr[row - 1][col] === searchStr[m]) {
+          if (arr[row - 1][col] === searchStr[iter]) {
             row--;
             arr[row][col] = null;
-            m++;
+            iter++;
             continue;
           }
         }
 
         if (col - 1 >= 0) {
-          if (arr[row][col - 1] === searchStr[m]) {
+          if (arr[row][col - 1] === searchStr[iter]) {
             col--;
             arr[row][col] = null;
-            m++;
+            iter++;
             continue;
           }
         }
 
         if (col + 1 <= columns) {
-          if (arr[row][col + 1] === searchStr[m]) {
+          if (arr[row][col + 1] === searchStr[iter]) {
             col++;
             arr[row][col] = null;
-            m++;
+            iter++;
             continue;
           }
         }
 
         if (row + 1 <= rows) {
-          if (arr[row + 1][col] === searchStr[m]) {
+          if (arr[row + 1][col] === searchStr[iter]) {
             row++;
             arr[row][col] = null;
-            m++;
+            iter++;
             continue;
           }
         }
         break;
       }
 
-      if (m === searchStr.length) return true;
-
+      if (iter === searchStr.length) return true;
     }
   }
 
   return false;
 }
-
 
 /**
  * Returns all permutations of the specified string.
@@ -109,22 +106,20 @@ function* getPermutations(chars) {
   if (chars.length < 2) {
     return yield chars;
   }
-  const combinations = [];
+  const permutations = [];
 
   for (let i = 0; i < chars.length; i++) {
     const remainStr = [...chars.slice(0, i), ...chars.slice(i + 1)];
 
     for (const subPermutation of getPermutations(remainStr)) {
-      combinations.push(`${chars[i]}${subPermutation}`);
+      permutations.push(`${chars[i]}${subPermutation}`);
     }
   }
 
-  for (const combination of combinations) {
-    yield combination;
-  }   
+  for (const permutation of permutations) {
+    yield permutation;
+  }
 }
-
-
 
 /**
  * Returns the most profit from stock quotes.
@@ -149,7 +144,6 @@ function getMostProfitFromStockQuotes(quotes) {
   }, 0);
 }
 
-
 /**
  * Class representing the url shorting helper.
  * Feel free to implement any algorithm, but do not store link in the key\value stores.
@@ -165,27 +159,51 @@ function getMostProfitFromStockQuotes(quotes) {
  *
  */
 function UrlShortener() {
-  this.urlAllowedChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+  this.urlAllowedChars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
     'abcdefghijklmnopqrstuvwxyz' +
     "0123456789-_.~!*'();:@&=+$,/?#[]";
 }
 
-function segment() {
-  this.left = 0;
-  this.right = 0;
-}
-
 UrlShortener.prototype = {
   encode(url) {
-    throw new Error('Not implemented');
+    const arrURL = [...url];
+    let encodeStr = arrURL.reduce((acc, char) => {
+      return acc + this.letterToStrNum(char);
+    }, '');
+    if (encodeStr.length % 4) encodeStr += '85';
+    let res = '';
+    while (encodeStr.length > 3) {
+      const partNum = encodeStr.slice(0, 4);
+      res += String.fromCharCode(partNum);
+      encodeStr = encodeStr.replace(partNum, '');
+    }
+    return res;
   },
 
   decode(code) {
-    throw new Error('Not implemented');
+    const arrCode = [...code];
+    const nums = arrCode.reduce((acc, num) => {
+      const code = num.charCodeAt(0);
+      acc.push(...[Math.floor(code / 100), code % 100]);
+      return acc;
+    }, []);
+
+    const high = nums.length - 1;
+    if (nums[high] === 85) {
+      nums.splice(high, 1);
+    }
+    return nums.map(num => this.strNumToLetter(num)).join('');
   },
 
-  defineSegment() {
+  letterToStrNum(letter) {
+    const index = this.urlAllowedChars.indexOf(letter);
+    return index < 10 ? `0${index}` : `${index}`;
+  },
 
+  strNumToLetter(strNum) {
+    const num = parseInt(strNum);
+    return this.urlAllowedChars[num];
   }
 };
 

@@ -49,9 +49,7 @@ const digits = {
 };
 
 function parseBankAccount(bankAccount) {
-  const strings = bankAccount.split('\n');
-  strings.pop();
-
+  const strings = bankAccount.split('\n').slice(0, -1);
   const accountNumber = [];
   for (let i = 0; i < strings[0].length / 3; i++) {
     const str = `${strings[0].slice(i * 3, i * 3 + 3)}\n` +
@@ -95,31 +93,31 @@ function parseBankAccount(bankAccount) {
  *      'characters.'
  */
 function* wrapText(text, columns) {
-  let startIndex = 0,
-    endIndex;
+  let start = 0,
+    end;
 
-  while (startIndex <= text.length) {
-    let currentIndex = startIndex;
+  while (start <= text.length) {
+    let current = start;
 
     while (true) {
-      currentIndex = text.indexOf(' ', currentIndex + 1);
+      current = text.indexOf(' ', current + 1);
 
-      if (currentIndex === -1) {
-        currentIndex = text.length;
+      if (current === -1) {
+        current = text.length;
 
-        if (currentIndex - startIndex < columns) {
-          endIndex = text.length;
+        if (current - start < columns) {
+          end = text.length;
           break;
         }
       }
 
-      if (currentIndex - startIndex - 1 >= columns) break;
+      if (current - start - 1 >= columns) break;
 
-      endIndex = currentIndex;
+      end = current;
     }
 
-    yield text.substring(startIndex, endIndex);
-    startIndex = ++endIndex;
+    yield text.substring(start, end);
+    start = ++end;
   }
 }
 
@@ -155,22 +153,6 @@ const PokerRank = {
   HighCard: 0
 };
 
-const sequence = {
-  A: 1,
-  2: 2,
-  3: 3,
-  4: 4,
-  5: 5,
-  6: 6,
-  7: 7,
-  8: 8,
-  9: 9,
-  10: 10,
-  J: 11,
-  Q: 12,
-  K: 13
-};
-
 function getPokerHandRank(hand) {
   const transformHand = hand.map(card => {
     const rank = +card[0],
@@ -201,6 +183,17 @@ function getPokerHandRank(hand) {
       }
     }
   });
+
+  const isEqualSuit = hand => {
+    return hand.every((card, i, arr) => card.suit === arr[0].suit);
+  };
+
+  const isSequenceRight = hand => {
+    return hand.every((card, i, arr) => {
+    });
+  };
+  
+  
 }
 
 /**
@@ -235,7 +228,53 @@ function getPokerHandRank(hand) {
  *    '+-------------+\n'
  */
 function* getFigureRectangles(figure) {
-  throw new Error('Not implemented');
+  const rect = (b, h) => {
+    let result = '';
+    const m = b - 2;
+    const line = s => s.repeat(m);
+    result += `+${line('-')}+\n`;
+    result += `|${line(' ')}|\n`.repeat(h - 2);
+    result += `+${line('-')}+\n`;
+    return result;
+  };
+
+  const lines = figure.split('\n');
+
+  while (lines.length > 2) {
+    const line = lines.shift();
+    const high = line.lastIndexOf('+');
+    let n2 = 0;
+    while (n2 < high) {
+      let n1 = -1;
+      do {
+        n1 = line.indexOf('+', n2);
+        const subN1 = lines[0][n1];
+        const notStop = (subN1 !== '+') && (subN1 !== '|');
+        n2 = n1 + 1;
+      } while (notStop);
+      if (n1 === -1) break;
+
+
+      let n = n1;
+
+
+      do {
+        n2 = line.indexOf('+', n + 1);
+        const subN2 = lines[0][n2];
+        const notStop = (subN2 !== '+') && (subN2 !== '|');
+        n = n2;
+      } while (notStop && (n2 !== -1));
+
+      if (n2 === -1) break;
+
+      const b = n2 - n1 + 1;
+      const h = lines.findIndex(x => x[n1] === '+' && x[n2] === '+') + 2;
+
+
+
+      yield rect(b, h);
+    }
+  }
 }
 
 module.exports = {
