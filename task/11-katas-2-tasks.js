@@ -154,46 +154,62 @@ const PokerRank = {
 };
 
 function getPokerHandRank(hand) {
-  const transformHand = hand.map(card => {
-    const rank = +card[0],
-      suit = card[1];
-
-    if (rank) {
-      return {
-        rank,
-        suit
-      };
-    } else {
-      switch (card[0]) {
-      case 'J':
-        return {
-          rank: 11,
-          suit
-        };
-      case 'Q':
-        return {
-          rank: 12,
-          suit
-        };
-      case 'K':
-        return {
-          rank: 13,
-          suit
-        };
+  const ranks = hand.map(card => {
+      const rank = +card[0];
+      if (rank) {
+        return rank;
+      } else {
+        switch (card[0]) {
+          case 'J':
+            return 11;
+          case 'Q':
+            return 12;
+          case 'K':
+            return 13;
+          case 'A':
+            return 1;
+        }
       }
-    }
-  });
+    }),
+    suits = hand.map(card => card[1]);
 
-  const isEqualSuit = hand => {
-    return hand.every((card, i, arr) => card.suit === arr[0].suit);
+  const isEqualSuit = suits => {
+    return Array.from(new Set(suits)).length === 1;
   };
 
-  const isSequenceRight = hand => {
-    return hand.every((card, i, arr) => {
+  const isSequenceRight = ranks => {
+    return ranks.every((rank, i, arr) => {
+      if (i !== arr.length - 1) {
+        const diff = rank - arr[i + 1][0];
+        return diff === 1 || diff === 9 && rank === 14;
+      } else return true;
     });
   };
-  
-  
+
+  const entries = Object.values(hand.reduce((acc, el) => {
+    if (acc[el]) acc[el]++;
+    else acc[el] = 1;
+    return acc;
+  }, {})).sort((a, b) => a - b);
+
+  if (isEqualSuit(suits) && isSequenceRight(ranks)) {
+    return PokerRank.StraightFlush;
+  } else if (entries[0] === 4) {
+    return PokerRank.FourOfKind;
+  } else if (entries[0] === 3 && entries[1] === 2) {
+    return PokerRank.FullHouse;
+  } else if (isEqualSuit(suits)) {
+    return PokerRank.Flush;
+  } else if (isSequenceRight(ranks)) {
+    return PokerRank.Straight;
+  } else if (entries[0] === 3) {
+    return PokerRank.ThreeOfKind;
+  } else if (entries[0] === 2 && entries[1] === 2) {
+    return PokerRank.TwoPairs;
+  } else if (entries[0] === 2) {
+    return PokerRank.OnePair;
+  }
+  return PokerRank.HighCard;
 }
 
 /**
@@ -228,51 +244,48 @@ function getPokerHandRank(hand) {
  *    '+-------------+\n'
  */
 function* getFigureRectangles(figure) {
-  const rect = (b, h) => {
-    let result = '';
-    const m = b - 2;
-    const line = s => s.repeat(m);
-    result += `+${line('-')}+\n`;
-    result += `|${line(' ')}|\n`.repeat(h - 2);
-    result += `+${line('-')}+\n`;
-    return result;
+  const getRectangleParams = (figure, ...positions) => {
+    if ([undefined, ' '].includes(figure[positions[0]][positions[1] + 1]) ||
+      !'+|'.includes(figure[positions[0] + 1][positions[1]])) {
+      return 'does not exist';
+    }
+
+    for (let i = positions[0], lengthI = figure.length; i < lengthI; i++) {
+      for (let j = positions[1] + 1; j < figure[i].length; j++) {
+        if (figure[i][j] === '+' && '+|'.includes(figure[i + 1][j])) {
+          for (let k = positions[0] + 1;; k++) {
+
+            if (figure[k][j] === '+') {
+              const width = j - positions[1] - 1,
+                height = k - positions[0] - 1;
+              return [width, height];
+            }
+          }
+        }
+      }
+    }
+
+    return 'does not exist';
   };
 
-  const lines = figure.split('\n');
+  function renderRectangle(...params) {
+    const topOrBottom = `+${'-'.repeat(params[0])}+\n`;
+    const sides = `|${' '.repeat(params[0])}|\n`;
 
-  while (lines.length > 2) {
-    const line = lines.shift();
-    const high = line.lastIndexOf('+');
-    let n2 = 0;
-    while (n2 < high) {
-      let n1 = -1;
-      do {
-        n1 = line.indexOf('+', n2);
-        const subN1 = lines[0][n1];
-        const notStop = (subN1 !== '+') && (subN1 !== '|');
-        n2 = n1 + 1;
-      } while (notStop);
-      if (n1 === -1) break;
+    return [topOrBottom, ...sides.repeat(params[1]), topOrBottom].join('');
+  }
 
+  const _figure = figure.split(/\n/);
 
-      let n = n1;
+  for (let i = 0; i < _figure.length - 1; i++) {
+    for (let j = 0; j < _figure[i].length; j++) {
+      if (_figure[i][j] === '+') {
+        const params = getRectangleParams(_figure, i, j);
 
-
-      do {
-        n2 = line.indexOf('+', n + 1);
-        const subN2 = lines[0][n2];
-        const notStop = (subN2 !== '+') && (subN2 !== '|');
-        n = n2;
-      } while (notStop && (n2 !== -1));
-
-      if (n2 === -1) break;
-
-      const b = n2 - n1 + 1;
-      const h = lines.findIndex(x => x[n1] === '+' && x[n2] === '+') + 2;
-
-
-
-      yield rect(b, h);
+        if (params !== 'does not exist') {
+          yield renderRectangle(...params);
+        }
+      }
     }
   }
 }
