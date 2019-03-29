@@ -100,7 +100,7 @@ function* wrapText(text, columns) {
   while (start <= text.length) {
     let current = start;
 
-    while (true) {
+    while (text) {
       current = text.indexOf(' ', current + 1);
 
       if (current === -1) {
