@@ -52,7 +52,8 @@ function parseBankAccount(bankAccount) {
   const strings = bankAccount.split('\n').slice(0, -1);
   const accountNumber = [];
   for (let i = 0; i < strings[0].length / 3; i++) {
-    const str = `${strings[0].slice(i * 3, i * 3 + 3)}\n` +
+    const str =
+      `${strings[0].slice(i * 3, i * 3 + 3)}\n` +
       `${strings[1].slice(i * 3, i * 3 + 3)}\n` +
       `${strings[2].slice(i * 3, i * 3 + 3)}`;
 
@@ -155,23 +156,23 @@ const PokerRank = {
 
 function getPokerHandRank(hand) {
   const ranks = hand.map(card => {
-      const rank = +card[0];
+      const rank = parseInt(card);
       if (rank) {
         return rank;
       } else {
         switch (card[0]) {
-          case 'J':
-            return 11;
-          case 'Q':
-            return 12;
-          case 'K':
-            return 13;
-          case 'A':
-            return 1;
+        case 'J':
+          return 11;
+        case 'Q':
+          return 12;
+        case 'K':
+          return 13;
+        case 'A':
+          return 14;
         }
       }
-    }),
-    suits = hand.map(card => card[1]);
+    }).sort((a, b) => b - a),
+    suits = hand.map(card => card.match(/♦|♥|♠|♣/)[0]);
 
   const isEqualSuit = suits => {
     return Array.from(new Set(suits)).length === 1;
@@ -180,17 +181,19 @@ function getPokerHandRank(hand) {
   const isSequenceRight = ranks => {
     return ranks.every((rank, i, arr) => {
       if (i !== arr.length - 1) {
-        const diff = rank - arr[i + 1][0];
-        return diff === 1 || diff === 9 && rank === 14;
+        const diff = rank - arr[i + 1];
+        return diff === 1 || (diff === 9 && rank === 14);
       } else return true;
     });
   };
 
-  const entries = Object.values(hand.reduce((acc, el) => {
-    if (acc[el]) acc[el]++;
-    else acc[el] = 1;
-    return acc;
-  }, {})).sort((a, b) => a - b);
+  const entries = Object.values(
+    ranks.reduce((acc, el) => {
+      if (acc[el]) acc[el]++;
+      else acc[el] = 1;
+      return acc;
+    }, {})
+  ).sort((a, b) => b - a);
 
   if (isEqualSuit(suits) && isSequenceRight(ranks)) {
     return PokerRank.StraightFlush;
@@ -245,8 +248,10 @@ function getPokerHandRank(hand) {
  */
 function* getFigureRectangles(figure) {
   const getRectangleParams = (figure, ...positions) => {
-    if ([undefined, ' '].includes(figure[positions[0]][positions[1] + 1]) ||
-      !'+|'.includes(figure[positions[0] + 1][positions[1]])) {
+    if (
+      [undefined, ' '].includes(figure[positions[0]][positions[1] + 1]) ||
+      !'+|'.includes(figure[positions[0] + 1][positions[1]])
+    ) {
       return 'does not exist';
     }
 
@@ -254,7 +259,6 @@ function* getFigureRectangles(figure) {
       for (let j = positions[1] + 1; j < figure[i].length; j++) {
         if (figure[i][j] === '+' && '+|'.includes(figure[i + 1][j])) {
           for (let k = positions[0] + 1;; k++) {
-
             if (figure[k][j] === '+') {
               const width = j - positions[1] - 1,
                 height = k - positions[0] - 1;
@@ -267,13 +271,12 @@ function* getFigureRectangles(figure) {
 
     return 'does not exist';
   };
-
-  function renderRectangle(...params) {
+  const renderRectangle = (...params) => {
     const topOrBottom = `+${'-'.repeat(params[0])}+\n`;
     const sides = `|${' '.repeat(params[0])}|\n`;
 
     return [topOrBottom, ...sides.repeat(params[1]), topOrBottom].join('');
-  }
+  };
 
   const _figure = figure.split(/\n/);
 
