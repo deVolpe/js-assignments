@@ -125,14 +125,7 @@ function isTriangle(a, b, c) {
  *
  */
 function doRectanglesOverlap(rect1, rect2) {
-  const firstLenX = rect1.left + rect1.width,
-    firstLenY = rect1.top + rect1.height;
-  const secondLenX = rect2.left + rect2.width,
-    secondLenY = rect2.top + rect2.height;
-
-  const xorX = secondLenX - firstLenX,
-    xorY = secondLenY - firstLenY;
-  return xorX < rect2.width && xorY < rect2.height;
+  return rect2.top - rect1.top - rect1.height > 0 || rect2.left - rect1.left - rect1.width > 0 ? false : true;
 }
 
 
@@ -374,23 +367,23 @@ function isBracketsBalanced(str) {
  *
  */
 function timespanToHumanString(startDate, endDate) {
-  const date0 = +startDate;
-  const date1 = +endDate;
+  const date0 = +startDate,
+    date1 = +endDate;
 
   const diff = date1 - date0;
 
-  const seconds = 1000;
-  const min = 60 * 1000;
-  const hours = 60 * 60 * 1000;
-  const days = 24 * hours;
-  const months = 30 * days;
-  const years = 365 * days;
+  const seconds = 1000,
+    min = 60 * 1000,
+    hours = 60 * 60 * 1000,
+    days = 24 * hours,
+    months = 30 * days,
+    years = 365 * days;
 
-  const dmin = Math.round((diff - 1) / min);
-  const dhours = Math.round((diff - 1) / hours);
-  const ddays = Math.round((diff - 1) / days);
-  const dmonths = Math.round((diff - 1) / months);
-  const dyears = Math.round((diff - 1) / years);
+  const dmin = Math.round((diff - 1) / min),
+    dhours = Math.round((diff - 1) / hours),
+    ddays = Math.round((diff - 1) / days),
+    dmonths = Math.round((diff - 1) / months),
+    dyears = Math.round((diff - 1) / years);
 
   if (diff >= 0 && diff <= 45 * seconds) return 'a few seconds ago';
   if (diff > 45 * seconds && diff <= 90 * seconds) return 'a minute ago';

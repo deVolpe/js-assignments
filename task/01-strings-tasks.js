@@ -220,8 +220,8 @@ function getRectangleString(width, height) {
  *
  */
 function encodeToRot13(str) {
-  const input = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  const output = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
+  const input = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+    output = 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm';
   const index = x => input.indexOf(x);
   const translate = x => index(x) > -1 ? output[index(x)] : x;
   return str.split('').map(translate).join('');
@@ -270,8 +270,8 @@ function isString(value) {
  *   'K♠' => 51
  */
 function getCardId(value) {
-  const rank = 'A234567891JQK';
-  const mark = '♣♦♥♠';
+  const rank = 'A234567891JQK',
+    mark = '♣♦♥♠';
   return rank.indexOf(value[0]) + mark.indexOf(value[value.length - 1]) * 13;
 }
 

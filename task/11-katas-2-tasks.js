@@ -248,6 +248,7 @@ function getPokerHandRank(hand) {
  */
 function* getFigureRectangles(figure) {
   const getRectangleParams = (figure, ...positions) => {
+    
     if (
       [undefined, ' '].includes(figure[positions[0]][positions[1] + 1]) ||
       !'+|'.includes(figure[positions[0] + 1][positions[1]])
@@ -255,7 +256,7 @@ function* getFigureRectangles(figure) {
       return 'does not exist';
     }
 
-    for (let i = positions[0], lengthI = figure.length; i < lengthI; i++) {
+    for (let i = positions[0]; i < figure.length; i++) {
       for (let j = positions[1] + 1; j < figure[i].length; j++) {
         if (figure[i][j] === '+' && '+|'.includes(figure[i + 1][j])) {
           for (let k = positions[0] + 1;; k++) {
@@ -272,10 +273,10 @@ function* getFigureRectangles(figure) {
     return 'does not exist';
   };
   const renderRectangle = (...params) => {
-    const topOrBottom = `+${'-'.repeat(params[0])}+\n`;
+    const verticalLine = `+${'-'.repeat(params[0])}+\n`;
     const sides = `|${' '.repeat(params[0])}|\n`;
 
-    return [topOrBottom, ...sides.repeat(params[1]), topOrBottom].join('');
+    return [verticalLine, ...sides.repeat(params[1]), verticalLine].join('');
   };
 
   const _figure = figure.split(/\n/);
